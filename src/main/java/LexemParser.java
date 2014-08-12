@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class LexemParser {
 	public LexemParser() {
-		_validCharacters = "()+-*/.0123456789EPsinexp";
-		_singleCharLexems = "()+-*/EP";
+		_validCharacters = "()+-*/.0123456789EPIsincosexp";
+		_singleCharLexems = "()+-*/E";
 	}
 
 	public ArrayList<Lexem> parse(String expression) {
