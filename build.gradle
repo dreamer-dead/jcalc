@@ -5,7 +5,7 @@ version = '0.0.1'
  
 description = "expression.calc"
  
-sourceCompatibility = 1.5
+sourceCompatibility = 1.7
 targetCompatibility = 1.7
  
 sourceSets {
