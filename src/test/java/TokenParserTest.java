@@ -8,6 +8,18 @@ public class TokenParserTest {
 	public TokenParserTest() {}
 
 	@Test
+	public void priorityTokensTest() {
+		final ParsedToken addToken = new ParsedToken(new Lexem("+", 0), ParsedToken.Type.OP_ADD);
+		final ParsedToken subToken = new ParsedToken(new Lexem("-", 0), ParsedToken.Type.OP_SUB);
+		final ParsedToken mulToken = new ParsedToken(new Lexem("*", 0), ParsedToken.Type.OP_MUL);
+		final ParsedToken divToken = new ParsedToken(new Lexem("/", 0), ParsedToken.Type.OP_DIV);
+		assertEquals(-1, addToken.comparePriority(divToken));
+		assertEquals(1, divToken.comparePriority(addToken));
+		assertEquals(1, mulToken.comparePriority(addToken));
+		assertEquals(-1, addToken.comparePriority(mulToken));
+	}
+
+	@Test
 	public void singleTokensTest() {
 		final ParsedToken [] expected = new ParsedToken [] {
 			new ParsedToken(new Lexem("1.02", 0), ParsedToken.Type.VALUE),
