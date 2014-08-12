@@ -8,11 +8,11 @@ public class TokensTest {
 
 	@Test
 	public void operandsTest() {
-		OperandToken token = new OperandToken(10.0);
+		final OperandToken token = new OperandToken(10.0);
 		assertEquals(Token.Type.OPERAND, token.getType());
 		assertEquals(10.0, token.getValue(), 0.0);
 
-		OperandToken tokenNegative = new OperandToken(-666.0);
+		final OperandToken tokenNegative = new OperandToken(-666.0);
 		assertEquals(Token.Type.OPERAND, tokenNegative.getType());
 		assertEquals(-666.0, tokenNegative.getValue(), 0.0);
 	}
@@ -38,9 +38,11 @@ public class TokensTest {
 
 	@Test
 	public void operatorsApplyingTest() {
-		OperatorToken operator = OperatorToken.add();
-		OperandToken t1 = new OperandToken(10.0);
-		OperandToken t2 = new OperandToken(5.0);
-		assertEquals(t1.getValue() + t2.getValue(), operator.apply(t1, t2), 0.001);
+		final OperandToken t1 = new OperandToken(10.0);
+		final OperandToken t2 = new OperandToken(5.0);
+		assertEquals(t1.getValue() + t2.getValue(), OperatorToken.add().apply(t1, t2), 0.001);
+		assertEquals(t1.getValue() - t2.getValue(), OperatorToken.sub().apply(t1, t2), 0.001);
+		assertEquals(t1.getValue() * t2.getValue(), OperatorToken.mul().apply(t1, t2), 0.001);
+		assertEquals(t1.getValue() / t2.getValue(), OperatorToken.div().apply(t1, t2), 0.001);
 	}
 }

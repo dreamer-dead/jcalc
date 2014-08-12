@@ -25,7 +25,18 @@ public class OperatorToken extends Token {
 	}
 
 	public double apply(OperandToken lvalue, OperandToken rvalue) {
-		return 0.0;
+		switch (_operatorType) {
+		case ADD:
+			return lvalue.getValue() + rvalue.getValue();
+		case SUB:
+			return lvalue.getValue() - rvalue.getValue();
+		case MUL:
+			return lvalue.getValue() * rvalue.getValue();
+		case DIV:
+			return lvalue.getValue() / rvalue.getValue();
+		default:
+			return 0.0;
+		}
 	}
 
 	public OperatorType getOperatorType() {

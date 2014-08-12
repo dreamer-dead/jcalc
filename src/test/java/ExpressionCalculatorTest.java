@@ -12,4 +12,4 @@ public class ExpressionCalculatorTest {
 		double result = calculator.evaluate("1 + 1");
 		assertEquals(1.0, result);
 	}
-}
+}	
