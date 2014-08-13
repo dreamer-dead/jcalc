@@ -9,9 +9,12 @@ public class PolishNotationTokensEvaluator {
 		Stack<Expression> stack = new Stack<Expression>();
 		for (ParsedToken t : tokens) {
 			final Expression exprFromToken = evaluateFromToken(t, stack);
+			stack.push(exprFromToken);
 		}
 
-		return null;
+		if (stack.size() != 1)
+			throw new IllegalArgumentException("Invalid token sequence!");
+		return stack.pop();
 	}
 
 	public static Expression evaluateFromToken(ParsedToken token, Stack<Expression> stack) {
