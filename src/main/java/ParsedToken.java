@@ -2,10 +2,11 @@ package org.dreamer.expression.calc;
 
 public class ParsedToken {
 	public enum Type {
-		VALUE, OPEN_BRACKET, CLOSE_BRACKET,
+		VALUE,
+		OPEN_BRACKET, CLOSE_BRACKET,
 		OP_ADD, OP_SUB, OP_MUL, OP_DIV,
-		FUNC_SIN, FUNC_COS, FUNC_EXP,
-		CONST_E, CONST_PI
+		FUNC,
+		CONST
 	}
 
 	public ParsedToken(Lexem lexem, Type type) {
@@ -44,15 +45,12 @@ public class ParsedToken {
 	}
 
 	public boolean isFunction() {
-		return _type == Type.FUNC_SIN
-			|| _type == Type.FUNC_COS
-			|| _type == Type.FUNC_EXP;
+		return _type == Type.FUNC;
 	}
 
 	public boolean isValue() {
 		return _type == Type.VALUE
-			|| _type == Type.CONST_E
-			|| _type == Type.CONST_PI;
+			|| _type == Type.CONST;
 	}
 
 	private Type _type;

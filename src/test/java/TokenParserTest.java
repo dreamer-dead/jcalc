@@ -27,20 +27,17 @@ public class TokenParserTest {
 			new ParsedToken(new Lexem("-", 0), ParsedToken.Type.OP_SUB),
 			new ParsedToken(new Lexem("*", 0), ParsedToken.Type.OP_MUL),
 			new ParsedToken(new Lexem("/", 0), ParsedToken.Type.OP_DIV),
-			new ParsedToken(new Lexem("E", 0), ParsedToken.Type.CONST_E),
-			new ParsedToken(new Lexem("sin", 0), ParsedToken.Type.FUNC_SIN),
-			new ParsedToken(new Lexem("cos", 0), ParsedToken.Type.FUNC_COS),
-			new ParsedToken(new Lexem("exp", 0), ParsedToken.Type.FUNC_EXP),
+			new ParsedToken(new Lexem("E", 0), ParsedToken.Type.CONST),
+			new ParsedToken(new Lexem("sin", 0), ParsedToken.Type.FUNC),
+			new ParsedToken(new Lexem("cos", 0), ParsedToken.Type.FUNC),
+			new ParsedToken(new Lexem("exp", 0), ParsedToken.Type.FUNC),
 			new ParsedToken(new Lexem("(", 0), ParsedToken.Type.OPEN_BRACKET),
 			new ParsedToken(new Lexem(")", 0), ParsedToken.Type.CLOSE_BRACKET)
 		};
 		final TokenParser tokenParser = new TokenParser();
 		for (ParsedToken t : expected) {
-			ArrayList<Lexem> tmp = new ArrayList<Lexem>();
-			tmp.add(t.getLexem());
-			ArrayList<ParsedToken> tokens = tokenParser.parse(tmp);
-			assertEquals(1, tokens.size());
-			assertEquals(t.getType(), tokens.get(0).getType());
+			final ParsedToken.Type type = tokenParser.parseLexemType(t.getLexem());
+			assertEquals(t.getType(), type);
 		}
 	}
 

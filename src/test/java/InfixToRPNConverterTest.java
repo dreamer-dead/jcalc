@@ -76,8 +76,31 @@ public class InfixToRPNConverterTest {
 
 		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
 		final ParsedToken.Type [] expected = new ParsedToken.Type [] {
-			ParsedToken.Type.VALUE,	ParsedToken.Type.FUNC_SIN, ParsedToken.Type.VALUE,
+			ParsedToken.Type.VALUE,	ParsedToken.Type.FUNC, ParsedToken.Type.VALUE,
 			ParsedToken.Type.OP_MUL, ParsedToken.Type.VALUE, ParsedToken.Type.OP_ADD
+		};
+
+		assertEquals(expected.length, tokensInRPN.size());
+		for (int i = 0; i < expected.length; ++i)
+			assertEquals(expected[i], tokensInRPN.get(i).getType());
+	}
+
+	@Test
+	public void parseExpressionWithFuncsTest() {
+		final TokenParser tokenParser = new TokenParser();
+		final LexemParser lexemParser = new LexemParser();
+		final InfixToRPNConverter converter = new InfixToRPNConverter();
+		final ArrayList<Lexem> lexems = lexemParser.parse("1 + sin(0)-cos(PI)");
+		final ArrayList<ParsedToken> tokens = tokenParser.parse(lexems);
+		assertEquals(11, tokens.size());
+
+		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
+		// 1,0,sin,+,PI,cos,-
+		final ParsedToken.Type [] expected = new ParsedToken.Type [] {
+			ParsedToken.Type.VALUE, ParsedToken.Type.VALUE,
+			ParsedToken.Type.FUNC, ParsedToken.Type.OP_ADD,
+			ParsedToken.Type.CONST, ParsedToken.Type.FUNC,
+			ParsedToken.Type.OP_SUB, 
 		};
 
 		assertEquals(expected.length, tokensInRPN.size());
