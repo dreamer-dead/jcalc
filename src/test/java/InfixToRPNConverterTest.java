@@ -46,7 +46,7 @@ public class InfixToRPNConverterTest {
 	}
 
 	@Test
-	public void parseExpression2Test() {
+	public void parseExpressionPriorityTest() {
 		final TokenParser tokenParser = new TokenParser();
 		final LexemParser lexemParser = new LexemParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
@@ -58,6 +58,26 @@ public class InfixToRPNConverterTest {
 		final ParsedToken.Type [] expected = new ParsedToken.Type [] {
 			ParsedToken.Type.VALUE,	ParsedToken.Type.VALUE, ParsedToken.Type.OP_ADD,
 			ParsedToken.Type.VALUE, ParsedToken.Type.OP_DIV
+		};
+
+		assertEquals(expected.length, tokensInRPN.size());
+		for (int i = 0; i < expected.length; ++i)
+			assertEquals(expected[i], tokensInRPN.get(i).getType());
+	}
+
+	@Test
+	public void parseExpressionWithFuncTest() {
+		final TokenParser tokenParser = new TokenParser();
+		final LexemParser lexemParser = new LexemParser();
+		final InfixToRPNConverter converter = new InfixToRPNConverter();
+		final ArrayList<Lexem> lexems = lexemParser.parse("sin(0) * 2 + 0.7");
+		final ArrayList<ParsedToken> tokens = tokenParser.parse(lexems);
+		assertEquals(8, tokens.size());
+
+		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
+		final ParsedToken.Type [] expected = new ParsedToken.Type [] {
+			ParsedToken.Type.VALUE,	ParsedToken.Type.FUNC_SIN, ParsedToken.Type.VALUE,
+			ParsedToken.Type.OP_MUL, ParsedToken.Type.VALUE, ParsedToken.Type.OP_ADD
 		};
 
 		assertEquals(expected.length, tokensInRPN.size());

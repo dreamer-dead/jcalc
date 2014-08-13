@@ -8,7 +8,7 @@ public class InfixToRPNConverter {
 	public InfixToRPNConverter() {
 	}
 
-	private static void p(Iterable<ParsedToken> ts) {
+	public static void p(Iterable<ParsedToken> ts) {
 		for (ParsedToken t : ts) {
 			System.out.print(t.getLexem().getValue());
 			System.out.print(", ");

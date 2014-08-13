@@ -58,4 +58,38 @@ public class LexemParserTest {
 		exception.expect(IllegalArgumentException.class);
 		new LexemParser().parse("1a");
 	}
+
+	@Test
+	public void parseFuncTest() {
+		final LexemParser parser = new LexemParser();
+		final ArrayList<Lexem> lexems = parser.parse("sin(1)");
+		assertEquals(4, lexems.size());
+		assertEquals("sin", lexems.get(0).getValue());
+		assertEquals("(", lexems.get(1).getValue());
+		assertEquals("1", lexems.get(2).getValue());
+		assertEquals(")", lexems.get(3).getValue());
+	}
+
+	@Test
+	public void parseConstTest() {
+		final LexemParser parser = new LexemParser();
+		final ArrayList<Lexem> lexems = parser.parse("E + PI");
+		assertEquals(3, lexems.size());
+		assertEquals("E", lexems.get(0).getValue());
+		assertEquals("+", lexems.get(1).getValue());
+		assertEquals("PI", lexems.get(2).getValue());
+	}
+
+	@Test
+	public void parseFuncAndConstTest() {
+		final LexemParser parser = new LexemParser();
+		final ArrayList<Lexem> lexems = parser.parse("cos(2 * PI)");
+		assertEquals(6, lexems.size());
+		assertEquals("cos", lexems.get(0).getValue());
+		assertEquals("(", lexems.get(1).getValue());
+		assertEquals("2", lexems.get(2).getValue());
+		assertEquals("*", lexems.get(3).getValue());
+		assertEquals("PI", lexems.get(4).getValue());
+		assertEquals(")", lexems.get(5).getValue());
+	}
 }

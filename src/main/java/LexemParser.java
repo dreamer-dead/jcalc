@@ -23,7 +23,7 @@ public class LexemParser {
 		// TODO: Set initial capacity size.
 		final StringBuilder currentLexemValue = new StringBuilder();
 		int lexemPosition = 0;
-		for (int i = 0; i < expressionLength; ++i) {
+		for (int i = 0; i < expressionLength;) {
 			final char c = expression.charAt(i);
 			if (_validCharacters.indexOf(c) < 0)
 				throw new IllegalArgumentException(
@@ -36,12 +36,24 @@ public class LexemParser {
 					currentLexemValue.setLength(0);
 				}
 				
-				result.add(new Lexem(String.valueOf(c), i));
+				result.add(new Lexem(String.valueOf(c), i++));
 			} else {
-				if (currentLexemValue.length() == 0)
-					lexemPosition = i;
 				if (Character.isDigit(c) || c == '.') {
-					currentLexemValue.append(c);
+					int nextPos = parseDigit(expression, i + 1);
+					result.add(new Lexem(expression.substring(i, nextPos), i));
+					i = nextPos;
+				} else if (c == 's' || c == 'c' || c == 'e') {
+					int nextPos = parseFunction(expression, i);
+					result.add(new Lexem(expression.substring(i, nextPos), i));
+					i = nextPos;
+				} else if (c == 'P') {
+					if (expression.length() <= i + 1)
+						throw new IllegalArgumentException("Invalid syntax111!");
+
+					if (expression.charAt(i + 1) != 'I')
+						throw new IllegalArgumentException("Invalid syntax222!");
+					result.add(new Lexem("PI", i));
+					i += 2;
 				}
 			}
 		}
@@ -53,6 +65,27 @@ public class LexemParser {
 		}
 
 		return result;
+	}
+
+	private int parseDigit(String expression, int offset) {
+		for (int i = offset; i < expression.length(); ++i) {
+			final char c = expression.charAt(i);
+			if (!Character.isDigit(c) && c != '.')
+				return i;
+		}
+		return expression.length();
+	}
+
+	private int parseFunction(String expression, int offset) {
+		// Max length of function name is 3 now.
+		final int nameEnd = offset + 3;
+		if (expression.length() >= nameEnd) {
+			final String name = expression.substring(offset, nameEnd);
+			if (name.equals("sin") || name.equals("cos") || name.equals("exp"))
+				return nameEnd;
+		}
+
+		throw new IllegalArgumentException("Invalid function name!");
 	}
 
 	private String _validCharacters;
