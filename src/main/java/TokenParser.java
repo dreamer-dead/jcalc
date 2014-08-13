@@ -15,18 +15,15 @@ public class TokenParser {
 	};
 
 	public TokenParser() {
-		_operatorsAndFunctions = new HashMap<String, ParsedToken.Type>();
-		_operatorsAndFunctions.put("(", ParsedToken.Type.OPEN_BRACKET);
-		_operatorsAndFunctions.put(")", ParsedToken.Type.CLOSE_BRACKET);
-		_operatorsAndFunctions.put("+", ParsedToken.Type.OP_ADD);
-		_operatorsAndFunctions.put("-", ParsedToken.Type.OP_SUB);
-		_operatorsAndFunctions.put("*", ParsedToken.Type.OP_MUL);
-		_operatorsAndFunctions.put("/", ParsedToken.Type.OP_DIV);
-		_operatorsAndFunctions.put("E", ParsedToken.Type.CONST);
-		_operatorsAndFunctions.put("PI", ParsedToken.Type.CONST);
-		_operatorsAndFunctions.put("sin", ParsedToken.Type.FUNC);
-		_operatorsAndFunctions.put("cos", ParsedToken.Type.FUNC);
-		_operatorsAndFunctions.put("exp", ParsedToken.Type.FUNC);
+		_operatorsAndConstants = new HashMap<String, ParsedToken.Type>();
+		_operatorsAndConstants.put("(", ParsedToken.Type.OPEN_BRACKET);
+		_operatorsAndConstants.put(")", ParsedToken.Type.CLOSE_BRACKET);
+		_operatorsAndConstants.put("+", ParsedToken.Type.OP_ADD);
+		_operatorsAndConstants.put("-", ParsedToken.Type.OP_SUB);
+		_operatorsAndConstants.put("*", ParsedToken.Type.OP_MUL);
+		_operatorsAndConstants.put("/", ParsedToken.Type.OP_DIV);
+		_operatorsAndConstants.put("E", ParsedToken.Type.CONST);
+		_operatorsAndConstants.put("PI", ParsedToken.Type.CONST);
 		_lastState = ParserState.EMPTY;
 	}
 
@@ -44,15 +41,27 @@ public class TokenParser {
 	}
 
 	public ParsedToken.Type parseLexemType(Lexem lexem) {
-		if (_operatorsAndFunctions.containsKey(lexem.getValue()))
-			return _operatorsAndFunctions.get(lexem.getValue());
+		final String lexemValue = lexem.getValue();
+		if (_operatorsAndConstants.containsKey(lexemValue))
+			return _operatorsAndConstants.get(lexemValue);
+
+		if (checkOnlyLiterals(lexemValue))
+			return ParsedToken.Type.FUNC;
 
 		try {
-			Double.parseDouble(lexem.getValue());
+			Double.parseDouble(lexemValue);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("Invalid value!");
 		}
 		return ParsedToken.Type.VALUE;
+	}
+
+	private static boolean checkOnlyLiterals(String lexem) {
+		for (int i = 0; i < lexem.length(); ++i)
+			if (!Character.isLetter(lexem.charAt(i)))
+				return false;
+
+		return true;
 	}
 
 	private void promoteParserState(ParsedToken.Type type) {
@@ -73,6 +82,7 @@ public class TokenParser {
 
 		switch (_lastState) {
 		case EMPTY:
+		case OPERATOR:
 			if (newState != ParserState.OPEN_BRACKET &&
 				newState != ParserState.VALUE &&
 				newState != ParserState.FUNC)
@@ -94,15 +104,10 @@ public class TokenParser {
 			if (newState != ParserState.OPEN_BRACKET)
 				throw new IllegalArgumentException("Invalid syntax!4");
 			break;
-		case OPERATOR:
-			if (newState != ParserState.VALUE &&
-				newState != ParserState.FUNC)
-				throw new IllegalArgumentException("Invalid syntax!5");
-			break;
 		}
 		_lastState = newState;
 	}
 
-	private HashMap<String, ParsedToken.Type> _operatorsAndFunctions;
+	private HashMap<String, ParsedToken.Type> _operatorsAndConstants;
 	private ParserState _lastState;
 }

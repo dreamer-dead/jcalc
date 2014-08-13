@@ -17,9 +17,24 @@ class ExpressionCalculator {
 		return _evaluator.evaluate(tokensInRPN).eval();
 	}
 
+	private static void printHelp() {
+		System.out.println("Usage: java -jar calc.jar \"1 + 2\"");
+	}
+
 	// Entry point for expression calculator
 	public static void main(String [] args) {
-		System.out.println("Hello!");
+		if (args.length != 1) {
+			printHelp();
+			return;
+		}
+
+		try {
+			double result = new ExpressionCalculator().evaluate(args[0]);
+			System.out.println(String.format("Result is %1$.5f", result));
+		} catch(Exception e) {
+			System.out.println("Failed to evaluate expression!");
+			System.out.println(e.getMessage());
+		}
 	}
 
 	PolishNotationTokensEvaluator _evaluator;
