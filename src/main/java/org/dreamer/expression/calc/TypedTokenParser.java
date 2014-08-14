@@ -31,6 +31,8 @@ public class TypedTokenParser {
 		ArrayList<TypedToken> result = new ArrayList<TypedToken>();
 		for (Token token : tokens)
 			result.add(parseToken(token));
+
+		finishParsing();
 		return result;
 	}
 
@@ -106,6 +108,16 @@ public class TypedTokenParser {
 			break;
 		}
 		_lastState = newState;
+	}
+
+	private void finishParsing() {
+		switch (_lastState) {
+		case CLOSE_BRACKET:
+		case VALUE:
+			_lastState = ParserState.EMPTY;
+			return;
+		}
+		throw new IllegalArgumentException("Invalid syntax!6");
 	}
 
 	private HashMap<String, TypedToken.Type> _operatorsAndConstants;

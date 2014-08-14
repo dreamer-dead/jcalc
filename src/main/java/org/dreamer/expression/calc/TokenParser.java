@@ -10,7 +10,7 @@ public class TokenParser {
 	}
 
 	public ArrayList<Token> parse(String expression) {
-		String trimmedExpression = expression.replaceAll("\\s", "");
+		String trimmedExpression = expression.trim();
 		if (trimmedExpression.isEmpty())
 			throw new IllegalArgumentException("Empty expression!");
 
@@ -22,6 +22,10 @@ public class TokenParser {
 		final int expressionLength = expression.length();
 		for (int i = 0; i < expressionLength;) {
 			final char c = expression.charAt(i);
+			if (Character.isWhitespace(c)) {
+				i = skipWhitespace(expression, i + 1);
+				continue;
+			}
 			if (_validCharacters.indexOf(c) < 0)
 				throw new IllegalArgumentException(
 					"Invalid expression syntax! (char '" + String.valueOf(c)
@@ -41,6 +45,15 @@ public class TokenParser {
 		}
 
 		return result;
+	}
+
+	private int skipWhitespace(String expression, int offset) {
+		for (int i = offset; i < expression.length(); ++i) {
+			final char c = expression.charAt(i);
+			if (!Character.isWhitespace(c))
+				return i;
+		}
+		return expression.length();
 	}
 
 	private int parseDigit(String expression, int offset) {

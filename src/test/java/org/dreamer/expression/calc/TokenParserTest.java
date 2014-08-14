@@ -112,4 +112,25 @@ public class TokenParserTest {
 		assertEquals("-", tokens.get(3).getValue());
 		assertEquals("IPI", tokens.get(4).getValue());
 	}
+
+	@Test
+	public void parseWhitespaceTest() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("1 2");
+		assertEquals(2, tokens.size());
+		assertEquals("1", tokens.get(0).getValue());
+		assertEquals("2", tokens.get(1).getValue());
+	}
+
+	@Test
+	public void parseWhitespace2Test() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("P I s i n");
+		assertEquals(5, tokens.size());
+		assertEquals("P", tokens.get(0).getValue());
+		assertEquals("I", tokens.get(1).getValue());
+		assertEquals("s", tokens.get(2).getValue());
+		assertEquals("i", tokens.get(3).getValue());
+		assertEquals("n", tokens.get(4).getValue());
+	}
 }
