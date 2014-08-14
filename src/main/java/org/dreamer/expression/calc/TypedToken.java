@@ -1,6 +1,6 @@
 package org.dreamer.expression.calc;
 
-public class ParsedToken {
+public class TypedToken {
 	public enum Type {
 		VALUE,
 		OPEN_BRACKET, CLOSE_BRACKET,
@@ -9,17 +9,25 @@ public class ParsedToken {
 		CONST
 	}
 
-	public ParsedToken(Lexem lexem, Type type) {
+	public TypedToken(Token token, Type type) {
 		_type = type;
-		_lexem = lexem;
+		_token = token;
 	}
 
 	public Type getType() {
 		return _type;
 	}
 
-	public Lexem getLexem() {
-		return _lexem;
+	public String getValue() {
+		return _token.getValue();
+	}
+
+	public int getPosition() {
+		return _token.getPosition();
+	}
+
+	public Token getTokenValue() {
+		return _token;
 	}
 
 	public boolean isOperator() {
@@ -29,9 +37,8 @@ public class ParsedToken {
 			|| _type == Type.OP_DIV;
 	}
 
-	public int comparePriority(ParsedToken other) {
+	public int comparePriority(TypedToken other) {
 		if (isOperator() && other.isOperator()) {
-			//return compareOperatorPriority(_type, other.getType());
 			return getPriority(_type) - getPriority(other.getType());
 		}
 		return 1;
@@ -54,5 +61,5 @@ public class ParsedToken {
 	}
 
 	private Type _type;
-	Lexem _lexem;
+	Token _token;
 }

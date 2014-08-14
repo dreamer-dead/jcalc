@@ -8,18 +8,10 @@ public class InfixToRPNConverter {
 	public InfixToRPNConverter() {
 	}
 
-	public static void p(Iterable<ParsedToken> ts) {
-		for (ParsedToken t : ts) {
-			System.out.print(t.getLexem().getValue());
-			System.out.print(", ");
-		}
-		System.out.println("!");
-	}
-
-	public ArrayList<ParsedToken> convert(Iterable<ParsedToken> tokens) {
-		final ArrayList<ParsedToken> result = new ArrayList<ParsedToken>();
-		final Stack<ParsedToken> stack = new Stack<ParsedToken>();
-		for (ParsedToken token : tokens) {
+	public ArrayList<TypedToken> convert(Iterable<TypedToken> tokens) {
+		final ArrayList<TypedToken> result = new ArrayList<TypedToken>();
+		final Stack<TypedToken> stack = new Stack<TypedToken>();
+		for (TypedToken token : tokens) {
 			if (token.isValue()) {
 				result.add(token);
 			} else if (token.isFunction()) {
@@ -29,13 +21,13 @@ public class InfixToRPNConverter {
 					result.add(stack.pop());
 				}
 				stack.push(token);
-			} else if (token.getType() == ParsedToken.Type.OPEN_BRACKET
-					|| token.getType() == ParsedToken.Type.CLOSE_BRACKET) {
-				if (stack.empty() || token.getType() == ParsedToken.Type.OPEN_BRACKET) {
+			} else if (token.getType() == TypedToken.Type.OPEN_BRACKET
+					|| token.getType() == TypedToken.Type.CLOSE_BRACKET) {
+				if (stack.empty() || token.getType() == TypedToken.Type.OPEN_BRACKET) {
 					stack.push(token);
 				} else {
-					ParsedToken tmp = stack.pop();
-					while (tmp.getType() != ParsedToken.Type.OPEN_BRACKET) {
+					TypedToken tmp = stack.pop();
+					while (tmp.getType() != TypedToken.Type.OPEN_BRACKET) {
 						result.add(tmp);
 						if (stack.empty())
 							throw new IllegalArgumentException("() Syntax error!");

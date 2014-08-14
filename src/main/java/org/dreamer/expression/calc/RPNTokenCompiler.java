@@ -5,9 +5,9 @@ import java.util.Stack;
 public class RPNTokenCompiler {
 	public RPNTokenCompiler() {}
 
-	public Expression compile(Iterable<ParsedToken> tokens) {
+	public Expression compile(Iterable<TypedToken> tokens) {
 		Stack<Expression> stack = new Stack<Expression>();
-		for (ParsedToken t : tokens) {
+		for (TypedToken t : tokens) {
 			final Expression exprFromToken = compileToken(t, stack);
 			stack.push(exprFromToken);
 		}
@@ -17,12 +17,12 @@ public class RPNTokenCompiler {
 		return stack.pop();
 	}
 
-	public static Expression compileToken(ParsedToken token, Stack<Expression> stack) {
+	public static Expression compileToken(TypedToken token, Stack<Expression> stack) {
 		if (token.isValue()) {
-			if (token.getType() == ParsedToken.Type.CONST)
-				return ValueExpression.constant(token.getLexem().getValue());
+			if (token.getType() == TypedToken.Type.CONST)
+				return ValueExpression.constant(token.getValue());
 			else
-				return new ValueExpression(Double.parseDouble(token.getLexem().getValue()));
+				return new ValueExpression(Double.parseDouble(token.getValue()));
 		} else if (token.isOperator()) {
 			if (stack.size() < 2)
 				throw new IllegalArgumentException("Invalid stack size!");
@@ -38,7 +38,7 @@ public class RPNTokenCompiler {
 		} else if (token.isFunction()) {
 			if (stack.empty())
 				throw new IllegalArgumentException("Invalid stack size!");
-			final String functionName = token.getLexem().getValue();
+			final String functionName = token.getValue();
 			if (functionName.equals("sin"))
 				return FunctionExpression.sin(stack.pop());
 			else if (functionName.equals("cos"))

@@ -1,15 +1,19 @@
 package org.dreamer.expression.calc;
 
 public class Token {
-	public enum Type { OPERAND, OPERATOR }
-
-	protected Token(Type type) {
-		_type = type;
+	public Token(String value, int position) {
+		_value = value;
+		_position = position;
 	}
 
-	public Type getType() {
-		return _type;
+	public String getValue() {
+		return _value;
 	}
 
-	private Type _type;
+	public int getPosition() {
+		return _position;
+	}
+
+	protected String _value;
+	protected int _position;
 }

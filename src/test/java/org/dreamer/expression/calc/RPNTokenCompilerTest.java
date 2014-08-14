@@ -10,9 +10,9 @@ public class RPNTokenCompilerTest {
 
 	@Test
 	public void evaluateValueTest() {
-		final ParsedToken tokenVal = new ParsedToken(new Lexem("1.02", 0), ParsedToken.Type.VALUE);
-		final ParsedToken tokenE = new ParsedToken(new Lexem("E", 0), ParsedToken.Type.CONST);
-		final ParsedToken tokenPI = new ParsedToken(new Lexem("PI", 0), ParsedToken.Type.CONST);
+		final TypedToken tokenVal = new TypedToken(new Token("1.02", 0), TypedToken.Type.VALUE);
+		final TypedToken tokenE = new TypedToken(new Token("E", 0), TypedToken.Type.CONST);
+		final TypedToken tokenPI = new TypedToken(new Token("PI", 0), TypedToken.Type.CONST);
 		final Stack<Expression> stack = new Stack<Expression>();
 		final Expression v = RPNTokenCompiler.compileToken(tokenVal, stack);
 		assertEquals(1.02, v.eval(), 0.01);
@@ -28,7 +28,7 @@ public class RPNTokenCompilerTest {
 	public void evaluateOpsTest() {
 		Expression val = new ValueExpression(1.02);
 		final Expression valE = new ValueExpression(Math.E);
-		ParsedToken tokenOperator = new ParsedToken(new Lexem("+", 0), ParsedToken.Type.OP_ADD);
+		TypedToken tokenOperator = new TypedToken(new Token("+", 0), TypedToken.Type.OP_ADD);
 		final Stack<Expression> stack = new Stack<Expression>();
 		stack.push(val);
 		stack.push(valE);
@@ -38,7 +38,7 @@ public class RPNTokenCompilerTest {
 
 		stack.push(valE);
 		stack.push(val);
-		tokenOperator = new ParsedToken(new Lexem("-", 0), ParsedToken.Type.OP_SUB);
+		tokenOperator = new TypedToken(new Token("-", 0), TypedToken.Type.OP_SUB);
 		v = RPNTokenCompiler.compileToken(tokenOperator, stack);
 		assertEquals(valE.eval() - val.eval(), v.eval(), 0.01);
 		assertTrue(stack.empty());
@@ -46,7 +46,7 @@ public class RPNTokenCompilerTest {
 		val = new ValueExpression(3.42);
 		stack.push(valE);
 		stack.push(val);
-		tokenOperator = new ParsedToken(new Lexem("*", 0), ParsedToken.Type.OP_MUL);
+		tokenOperator = new TypedToken(new Token("*", 0), TypedToken.Type.OP_MUL);
 		v = RPNTokenCompiler.compileToken(tokenOperator, stack);
 		assertEquals(valE.eval() * val.eval(), v.eval(), 0.01);
 		assertTrue(stack.empty());
@@ -54,7 +54,7 @@ public class RPNTokenCompilerTest {
 		val = new ValueExpression(123.42);
 		stack.push(val);
 		stack.push(valE);
-		tokenOperator = new ParsedToken(new Lexem("/", 0), ParsedToken.Type.OP_DIV);
+		tokenOperator = new TypedToken(new Token("/", 0), TypedToken.Type.OP_DIV);
 		v = RPNTokenCompiler.compileToken(tokenOperator, stack);
 		assertEquals(val.eval() / valE.eval(), v.eval(), 0.01);
 		assertTrue(stack.empty());
@@ -63,7 +63,7 @@ public class RPNTokenCompilerTest {
 	@Test
 	public void evaluateFuncsTest() {
 		final Expression valPI = new ValueExpression(Math.PI);
-		ParsedToken tokenFunc = new ParsedToken(new Lexem("sin", 0), ParsedToken.Type.FUNC);
+		TypedToken tokenFunc = new TypedToken(new Token("sin", 0), TypedToken.Type.FUNC);
 		final Stack<Expression> stack = new Stack<Expression>();
 		stack.push(valPI);
 		Expression v = RPNTokenCompiler.compileToken(tokenFunc, stack);
@@ -71,13 +71,13 @@ public class RPNTokenCompilerTest {
 		assertTrue(stack.empty());
 
 		stack.push(valPI);
-		tokenFunc = new ParsedToken(new Lexem("cos", 0), ParsedToken.Type.FUNC);
+		tokenFunc = new TypedToken(new Token("cos", 0), TypedToken.Type.FUNC);
 		v = RPNTokenCompiler.compileToken(tokenFunc, stack);
 		assertEquals(Math.cos(valPI.eval()), v.eval(), 0.01);
 		assertTrue(stack.empty());
 
 		stack.push(valPI);
-		tokenFunc = new ParsedToken(new Lexem("exp", 0), ParsedToken.Type.FUNC);
+		tokenFunc = new TypedToken(new Token("exp", 0), TypedToken.Type.FUNC);
 		v = RPNTokenCompiler.compileToken(tokenFunc, stack);
 		assertEquals(Math.exp(valPI.eval()), v.eval(), 0.01);
 		assertTrue(stack.empty());
@@ -85,12 +85,12 @@ public class RPNTokenCompilerTest {
 
 	private static Expression compileExpression(String expression) {
 		final RPNTokenCompiler compiler = new RPNTokenCompiler();
+		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
-		final LexemParser lexemParser = new LexemParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
-		final ArrayList<Lexem> lexems = lexemParser.parse(expression);
-		final ArrayList<ParsedToken> tokens = tokenParser.parse(lexems);
-		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
+		final ArrayList<Token> tokens = tokenParser.parse(expression);
+		final ArrayList<TypedToken> typedTokens = typedTokenParser.parse(tokens);
+		final ArrayList<TypedToken> tokensInRPN = converter.convert(typedTokens);
 		return compiler.compile(tokensInRPN);
 	}
 

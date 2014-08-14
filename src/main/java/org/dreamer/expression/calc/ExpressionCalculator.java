@@ -4,16 +4,16 @@ import java.util.ArrayList;
 
 class ExpressionCalculator {
 	public ExpressionCalculator() {
-		_compiler = new RNETokenCompiler();
+		_compiler = new RPNTokenCompiler();
+		_typedTokenParser = new TypedTokenParser();
 		_tokenParser = new TokenParser();
-		_lexemParser = new LexemParser();
 		_converter = new InfixToRPNConverter();
 	}
 
 	public double evaluate(String expression) {
-		final ArrayList<Lexem> lexems = _lexemParser.parse(expression);
-		final ArrayList<ParsedToken> tokens = _tokenParser.parse(lexems);
-		final ArrayList<ParsedToken> tokensInRPN = _converter.convert(tokens);
+		final ArrayList<Token> tokens = _tokenParser.parse(expression);
+		final ArrayList<TypedToken> typedTokens = _typedTokenParser.parse(tokens);
+		final ArrayList<TypedToken> tokensInRPN = _converter.convert(typedTokens);
 		return _compiler.compile(tokensInRPN).eval();
 	}
 
@@ -37,8 +37,8 @@ class ExpressionCalculator {
 		}
 	}
 
-	RNETokenCompiler _compiler;
+	RPNTokenCompiler _compiler;
+	TypedTokenParser _typedTokenParser;
 	TokenParser _tokenParser;
-	LexemParser _lexemParser;
 	InfixToRPNConverter _converter;
 }

@@ -13,31 +13,31 @@ public class InfixToRPNConverterTest {
 	@Test
 	public void parseSimpleTest() {
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
-		final ArrayList<ParsedToken> tokens = new ArrayList<ParsedToken>();
-		tokens.add(new ParsedToken(new Lexem("1", 0), ParsedToken.Type.VALUE));
-		tokens.add(new ParsedToken(new Lexem("+", 0), ParsedToken.Type.OP_ADD));
-		tokens.add(new ParsedToken(new Lexem("2", 0), ParsedToken.Type.VALUE));
-		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
+		final ArrayList<TypedToken> tokens = new ArrayList<TypedToken>();
+		tokens.add(new TypedToken(new Token("1", 0), TypedToken.Type.VALUE));
+		tokens.add(new TypedToken(new Token("+", 0), TypedToken.Type.OP_ADD));
+		tokens.add(new TypedToken(new Token("2", 0), TypedToken.Type.VALUE));
+		final ArrayList<TypedToken> tokensInRPN = converter.convert(tokens);
 
 		assertEquals(3, tokensInRPN.size());
-		assertEquals(ParsedToken.Type.VALUE, tokensInRPN.get(0).getType());
-		assertEquals(ParsedToken.Type.VALUE, tokensInRPN.get(1).getType());
-		assertEquals(ParsedToken.Type.OP_ADD, tokensInRPN.get(2).getType());
+		assertEquals(TypedToken.Type.VALUE, tokensInRPN.get(0).getType());
+		assertEquals(TypedToken.Type.VALUE, tokensInRPN.get(1).getType());
+		assertEquals(TypedToken.Type.OP_ADD, tokensInRPN.get(2).getType());
 	}
 
 	@Test
 	public void parseExpression1Test() {
+		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
-		final LexemParser lexemParser = new LexemParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
-		final ArrayList<Lexem> lexems = lexemParser.parse("1 + 4 / 2");
-		final ArrayList<ParsedToken> tokens = tokenParser.parse(lexems);
-		assertEquals(5, tokens.size());
+		final ArrayList<Token> tokens = tokenParser.parse("1 + 4 / 2");
+		final ArrayList<TypedToken> typedTokens = typedTokenParser.parse(tokens);
+		assertEquals(5, typedTokens.size());
 
-		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
-		final ParsedToken.Type [] expected = new ParsedToken.Type [] {
-			ParsedToken.Type.VALUE,	ParsedToken.Type.VALUE, ParsedToken.Type.VALUE,
-			ParsedToken.Type.OP_DIV, ParsedToken.Type.OP_ADD
+		final ArrayList<TypedToken> tokensInRPN = converter.convert(typedTokens);
+		final TypedToken.Type [] expected = new TypedToken.Type [] {
+			TypedToken.Type.VALUE,	TypedToken.Type.VALUE, TypedToken.Type.VALUE,
+			TypedToken.Type.OP_DIV, TypedToken.Type.OP_ADD
 		};
 
 		assertEquals(expected.length, tokensInRPN.size());
@@ -47,17 +47,17 @@ public class InfixToRPNConverterTest {
 
 	@Test
 	public void parseExpressionPriorityTest() {
+		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
-		final LexemParser lexemParser = new LexemParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
-		final ArrayList<Lexem> lexems = lexemParser.parse("(1 + 4) / 2");
-		final ArrayList<ParsedToken> tokens = tokenParser.parse(lexems);
-		assertEquals(7, tokens.size());
+		final ArrayList<Token> tokens = tokenParser.parse("(1 + 4) / 2");
+		final ArrayList<TypedToken> typedTokens = typedTokenParser.parse(tokens);
+		assertEquals(7, typedTokens.size());
 
-		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
-		final ParsedToken.Type [] expected = new ParsedToken.Type [] {
-			ParsedToken.Type.VALUE,	ParsedToken.Type.VALUE, ParsedToken.Type.OP_ADD,
-			ParsedToken.Type.VALUE, ParsedToken.Type.OP_DIV
+		final ArrayList<TypedToken> tokensInRPN = converter.convert(typedTokens);
+		final TypedToken.Type [] expected = new TypedToken.Type [] {
+			TypedToken.Type.VALUE,	TypedToken.Type.VALUE, TypedToken.Type.OP_ADD,
+			TypedToken.Type.VALUE, TypedToken.Type.OP_DIV
 		};
 
 		assertEquals(expected.length, tokensInRPN.size());
@@ -67,17 +67,17 @@ public class InfixToRPNConverterTest {
 
 	@Test
 	public void parseExpressionWithFuncTest() {
+		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
-		final LexemParser lexemParser = new LexemParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
-		final ArrayList<Lexem> lexems = lexemParser.parse("sin(0) * 2 + 0.7");
-		final ArrayList<ParsedToken> tokens = tokenParser.parse(lexems);
-		assertEquals(8, tokens.size());
+		final ArrayList<Token> tokens = tokenParser.parse("sin(0) * 2 + 0.7");
+		final ArrayList<TypedToken> typedTokens = typedTokenParser.parse(tokens);
+		assertEquals(8, typedTokens.size());
 
-		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
-		final ParsedToken.Type [] expected = new ParsedToken.Type [] {
-			ParsedToken.Type.VALUE,	ParsedToken.Type.FUNC, ParsedToken.Type.VALUE,
-			ParsedToken.Type.OP_MUL, ParsedToken.Type.VALUE, ParsedToken.Type.OP_ADD
+		final ArrayList<TypedToken> tokensInRPN = converter.convert(typedTokens);
+		final TypedToken.Type [] expected = new TypedToken.Type [] {
+			TypedToken.Type.VALUE,	TypedToken.Type.FUNC, TypedToken.Type.VALUE,
+			TypedToken.Type.OP_MUL, TypedToken.Type.VALUE, TypedToken.Type.OP_ADD
 		};
 
 		assertEquals(expected.length, tokensInRPN.size());
@@ -87,20 +87,20 @@ public class InfixToRPNConverterTest {
 
 	@Test
 	public void parseExpressionWithFuncsTest() {
+		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
-		final LexemParser lexemParser = new LexemParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
-		final ArrayList<Lexem> lexems = lexemParser.parse("1 + sin(0)-cos(PI)");
-		final ArrayList<ParsedToken> tokens = tokenParser.parse(lexems);
-		assertEquals(11, tokens.size());
+		final ArrayList<Token> tokens = tokenParser.parse("1 + sin(0)-cos(PI)");
+		final ArrayList<TypedToken> typedTokens = typedTokenParser.parse(tokens);
+		assertEquals(11, typedTokens.size());
 
-		final ArrayList<ParsedToken> tokensInRPN = converter.convert(tokens);
+		final ArrayList<TypedToken> tokensInRPN = converter.convert(typedTokens);
 		// 1,0,sin,+,PI,cos,-
-		final ParsedToken.Type [] expected = new ParsedToken.Type [] {
-			ParsedToken.Type.VALUE, ParsedToken.Type.VALUE,
-			ParsedToken.Type.FUNC, ParsedToken.Type.OP_ADD,
-			ParsedToken.Type.CONST, ParsedToken.Type.FUNC,
-			ParsedToken.Type.OP_SUB, 
+		final TypedToken.Type [] expected = new TypedToken.Type [] {
+			TypedToken.Type.VALUE, TypedToken.Type.VALUE,
+			TypedToken.Type.FUNC, TypedToken.Type.OP_ADD,
+			TypedToken.Type.CONST, TypedToken.Type.FUNC,
+			TypedToken.Type.OP_SUB, 
 		};
 
 		assertEquals(expected.length, tokensInRPN.size());

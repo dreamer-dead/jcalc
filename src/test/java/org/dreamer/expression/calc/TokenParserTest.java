@@ -1,57 +1,115 @@
 package org.dreamer.expression.calc;
 
+import org.junit.rules.ExpectedException;
 import org.junit.Test;
+import org.junit.Rule;
 import static org.junit.Assert.*;
-import java.util.ArrayList;	
+import java.util.ArrayList;
 
 public class TokenParserTest {
-	public TokenParserTest() {}
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
 
-	@Test
-	public void priorityTokensTest() {
-		final ParsedToken addToken = new ParsedToken(new Lexem("+", 0), ParsedToken.Type.OP_ADD);
-		final ParsedToken subToken = new ParsedToken(new Lexem("-", 0), ParsedToken.Type.OP_SUB);
-		final ParsedToken mulToken = new ParsedToken(new Lexem("*", 0), ParsedToken.Type.OP_MUL);
-		final ParsedToken divToken = new ParsedToken(new Lexem("/", 0), ParsedToken.Type.OP_DIV);
-		assertEquals(-1, addToken.comparePriority(divToken));
-		assertEquals(1, divToken.comparePriority(addToken));
-		assertEquals(1, mulToken.comparePriority(addToken));
-		assertEquals(-1, addToken.comparePriority(mulToken));
+	public TokenParserTest() {
 	}
 
 	@Test
-	public void singleTokensTest() {
-		final ParsedToken [] expected = new ParsedToken [] {
-			new ParsedToken(new Lexem("1.02", 0), ParsedToken.Type.VALUE),
-			new ParsedToken(new Lexem("+", 0), ParsedToken.Type.OP_ADD),
-			new ParsedToken(new Lexem("-", 0), ParsedToken.Type.OP_SUB),
-			new ParsedToken(new Lexem("*", 0), ParsedToken.Type.OP_MUL),
-			new ParsedToken(new Lexem("/", 0), ParsedToken.Type.OP_DIV),
-			new ParsedToken(new Lexem("E", 0), ParsedToken.Type.CONST),
-			new ParsedToken(new Lexem("sin", 0), ParsedToken.Type.FUNC),
-			new ParsedToken(new Lexem("cos", 0), ParsedToken.Type.FUNC),
-			new ParsedToken(new Lexem("exp", 0), ParsedToken.Type.FUNC),
-			new ParsedToken(new Lexem("(", 0), ParsedToken.Type.OPEN_BRACKET),
-			new ParsedToken(new Lexem(")", 0), ParsedToken.Type.CLOSE_BRACKET)
-		};
-		final TokenParser tokenParser = new TokenParser();
-		for (ParsedToken t : expected) {
-			final ParsedToken.Type type = tokenParser.parseLexemType(t.getLexem());
-			assertEquals(t.getType(), type);
-		}
-	}
-
-	@Test
-	public void expressionTokensTest() {
-		final TokenParser tokenParser = new TokenParser();
-		final LexemParser lexemParser = new LexemParser();
-		final ArrayList<Lexem> lexems = lexemParser.parse("1 + 2");
-		assertEquals(3, lexems.size());
-
-		final ArrayList<ParsedToken> tokens = tokenParser.parse(lexems);
+	public void parseSimpleTest() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("1 + 1");
 		assertEquals(3, tokens.size());
-		assertEquals(ParsedToken.Type.VALUE, tokens.get(0).getType());
-		assertEquals(ParsedToken.Type.OP_ADD, tokens.get(1).getType());
-		assertEquals(ParsedToken.Type.VALUE, tokens.get(2).getType());
+		assertEquals("1", tokens.get(0).getValue());
+		assertEquals("+", tokens.get(1).getValue());
+		assertEquals("1", tokens.get(2).getValue());
 	}
-}	
+
+	@Test
+	public void parseParensTest() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("1 +(3-2)");
+		String [] expected = new String[] {
+			"1", "+", "(", "3", "-", "2", ")"
+		};
+		assertEquals(expected.length, tokens.size());
+		for (int i = 0; i < expected.length; ++i)
+			assertEquals(expected[i], tokens.get(i).getValue());
+	}
+
+	@Test
+	public void parseDotInDoubleTest() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("1.44 + (5.0 - 2)");
+		String [] expected = new String[] {
+			"1.44", "+", "(", "5.0", "-", "2", ")"
+		};
+		assertEquals(expected.length, tokens.size());
+		for (int i = 0; i < expected.length; ++i)
+			assertEquals(expected[i], tokens.get(i).getValue());
+	}
+
+	@Test
+	public void parseEmptyStringTest() {
+		exception.expect(IllegalArgumentException.class);
+		new TokenParser().parse("   ");
+	}
+
+	// @Test
+	// public void parseInvalidSyntaxTest() {
+	// 	exception.expect(IllegalArgumentException.class);
+	// 	new TokenParser().parse("1a");
+	// }
+
+	private static void p(Iterable<Token> ls) {
+		for (Token l : ls) {
+			System.out.print(l.getValue());
+			System.out.print(", ");
+		}
+		System.out.println("!");
+	}
+
+	@Test
+	public void parseFuncTest() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("sin(1)");
+		assertEquals(4, tokens.size());
+		assertEquals("sin", tokens.get(0).getValue());
+		assertEquals("(", tokens.get(1).getValue());
+		assertEquals("1", tokens.get(2).getValue());
+		assertEquals(")", tokens.get(3).getValue());
+	}
+
+	@Test
+	public void parseConstTest() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("E + PI");
+		assertEquals(3, tokens.size());
+		assertEquals("E", tokens.get(0).getValue());
+		assertEquals("+", tokens.get(1).getValue());
+		assertEquals("PI", tokens.get(2).getValue());
+	}
+
+	@Test
+	public void parseFuncAndConstTest() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("cos(2 * PI)");
+		assertEquals(6, tokens.size());
+		assertEquals("cos", tokens.get(0).getValue());
+		assertEquals("(", tokens.get(1).getValue());
+		assertEquals("2", tokens.get(2).getValue());
+		assertEquals("*", tokens.get(3).getValue());
+		assertEquals("PI", tokens.get(4).getValue());
+		assertEquals(")", tokens.get(5).getValue());
+	}
+
+	@Test
+	public void parseUnknownLiteralsTest() {
+		final TokenParser parser = new TokenParser();
+		final ArrayList<Token> tokens = parser.parse("cso + cccc - IPI");
+		assertEquals(5, tokens.size());
+		assertEquals("cso", tokens.get(0).getValue());
+		assertEquals("+", tokens.get(1).getValue());
+		assertEquals("cccc", tokens.get(2).getValue());
+		assertEquals("-", tokens.get(3).getValue());
+		assertEquals("IPI", tokens.get(4).getValue());
+	}
+}
