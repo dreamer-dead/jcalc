@@ -30,7 +30,7 @@ public class InfixToRPNConverter {
 					while (tmp.getType() != TypedToken.Type.OPEN_BRACKET) {
 						result.add(tmp);
 						if (stack.empty())
-							throw new IllegalArgumentException("() Syntax error!");
+							throw ExceptionsHelper.missingOpenBracket();
 						tmp = stack.pop();
 					}
 					if (!stack.empty() && stack.peek().isFunction())

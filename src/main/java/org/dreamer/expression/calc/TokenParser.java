@@ -12,7 +12,7 @@ public class TokenParser {
 	public ArrayList<Token> parse(String expression) {
 		String trimmedExpression = expression.trim();
 		if (trimmedExpression.isEmpty())
-			throw new IllegalArgumentException("Empty expression!");
+			throw ExceptionsHelper.emptyExpression();
 
 		return parseInternal(trimmedExpression);
 	}
@@ -27,9 +27,7 @@ public class TokenParser {
 				continue;
 			}
 			if (_validCharacters.indexOf(c) < 0)
-				throw new IllegalArgumentException(
-					"Invalid expression syntax! (char '" + String.valueOf(c)
-					+ "' at position " + String.valueOf(i) + ")");
+				throw ExceptionsHelper.unsupportedCharacter(c, i);
 			if (_singleCharTokens.indexOf(c) >= 0) {
 				result.add(new Token(String.valueOf(c), i++));
 			} else {

@@ -20,7 +20,7 @@ public class TypedTokenParserTest {
 	}
 
 	@Test
-	public void singleTokensTest() {
+	public void singleTokensTest() throws ParserException {
 		final TypedToken [] expected = new TypedToken [] {
 			new TypedToken(new Token("1.02", 0), TypedToken.Type.VALUE),
 			new TypedToken(new Token("+", 0), TypedToken.Type.OP_ADD),
@@ -42,7 +42,7 @@ public class TypedTokenParserTest {
 	}
 
 	@Test
-	public void expressionTokensTest() {
+	public void expressionTokensTest() throws ParserException {
 		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
 		final ArrayList<Token> tokens = tokenParser.parse("1 + 2");

@@ -11,7 +11,7 @@ public class InfixToRPNConverterTest {
 	}
 
 	@Test
-	public void parseSimpleTest() {
+	public void parseSimpleTest() throws ParserException {
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
 		final ArrayList<TypedToken> tokens = new ArrayList<TypedToken>();
 		tokens.add(new TypedToken(new Token("1", 0), TypedToken.Type.VALUE));
@@ -26,7 +26,7 @@ public class InfixToRPNConverterTest {
 	}
 
 	@Test
-	public void parseExpression1Test() {
+	public void parseExpression1Test() throws ParserException {
 		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
@@ -46,7 +46,7 @@ public class InfixToRPNConverterTest {
 	}
 
 	@Test
-	public void parseExpressionPriorityTest() {
+	public void parseExpressionPriorityTest() throws ParserException {
 		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
@@ -66,7 +66,7 @@ public class InfixToRPNConverterTest {
 	}
 
 	@Test
-	public void parseExpressionWithFuncTest() {
+	public void parseExpressionWithFuncTest() throws ParserException {
 		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();
@@ -86,7 +86,7 @@ public class InfixToRPNConverterTest {
 	}
 
 	@Test
-	public void parseExpressionWithFuncsTest() {
+	public void parseExpressionWithFuncsTest() throws ParserException {
 		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
 		final InfixToRPNConverter converter = new InfixToRPNConverter();

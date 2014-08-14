@@ -83,7 +83,7 @@ public class RPNTokenCompilerTest {
 		assertTrue(stack.empty());
 	}
 
-	private static Expression compileExpression(String expression) {
+	private static Expression compileExpression(String expression) throws ParserException {
 		final RPNTokenCompiler compiler = new RPNTokenCompiler();
 		final TypedTokenParser typedTokenParser = new TypedTokenParser();
 		final TokenParser tokenParser = new TokenParser();
@@ -95,19 +95,19 @@ public class RPNTokenCompilerTest {
 	}
 
 	@Test
-	public void evaluateExpressionTest() {
+	public void evaluateExpressionTest() throws ParserException {
 		final Expression e = compileExpression("1 + 2");
 		assertEquals(3.0, e.eval(), 0.0);
 	}
 
 	@Test
-	public void evaluateValueExpressionTest() {
+	public void evaluateValueExpressionTest() throws ParserException {
 		final Expression e = compileExpression("1+4/2-3*4");
 		assertEquals(1.0+4/2-3*4, e.eval(), 0.0);
 	}
 
 	@Test
-	public void evaluateFuncExpressionTest() {
+	public void evaluateFuncExpressionTest() throws ParserException {
 		Expression e = compileExpression("sin(PI / 2.0) + cos(0) + E");
 		assertEquals(Math.sin(Math.PI / 2.0) + Math.cos(0) + Math.E, e.eval(), 0.0);
 

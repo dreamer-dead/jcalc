@@ -10,7 +10,7 @@ class ExpressionCalculator {
 		_converter = new InfixToRPNConverter();
 	}
 
-	public double evaluate(String expression) {
+	public double evaluate(String expression) throws ParserException {
 		final ArrayList<Token> tokens = _tokenParser.parse(expression);
 		final ArrayList<TypedToken> typedTokens = _typedTokenParser.parse(tokens);
 		final ArrayList<TypedToken> tokensInRPN = _converter.convert(typedTokens);

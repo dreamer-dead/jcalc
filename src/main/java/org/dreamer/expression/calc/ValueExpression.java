@@ -7,7 +7,7 @@ public class ValueExpression implements Expression {
 		else if (name.equals("PI"))
 			return new ValueExpression(Math.PI);
 
-		throw new IllegalArgumentException("Invalid constant name!");
+		throw ExceptionsHelper.unresolvedConstant(name);
 	}
 
 	public ValueExpression(double value) {

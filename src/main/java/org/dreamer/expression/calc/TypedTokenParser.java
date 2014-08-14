@@ -27,7 +27,7 @@ public class TypedTokenParser {
 		_lastState = ParserState.EMPTY;
 	}
 
-	public ArrayList<TypedToken> parse(Collection<Token> tokens) {
+	public ArrayList<TypedToken> parse(Collection<Token> tokens) throws ParserException {
 		ArrayList<TypedToken> result = new ArrayList<TypedToken>();
 		for (Token token : tokens)
 			result.add(parseToken(token));
@@ -36,13 +36,14 @@ public class TypedTokenParser {
 		return result;
 	}
 
-	private TypedToken parseToken(Token token) {
+	private TypedToken parseToken(Token token) throws ParserException {
 		TypedToken.Type type = parseTokenType(token);
-		promoteParserState(type);
-		return new TypedToken(token, type);
+		final TypedToken result = new TypedToken(token, type);
+		promoteParserState(result);
+		return result;
 	}
 
-	public TypedToken.Type parseTokenType(Token token) {
+	public TypedToken.Type parseTokenType(Token token) throws ParserException {
 		final String tokenValue = token.getValue();
 		if (_operatorsAndConstants.containsKey(tokenValue))
 			return _operatorsAndConstants.get(tokenValue);
@@ -53,7 +54,7 @@ public class TypedTokenParser {
 		try {
 			Double.parseDouble(tokenValue);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("Invalid value!");
+			throw ExceptionsHelper.parseNumberError(token);
 		}
 		return TypedToken.Type.VALUE;
 	}
@@ -66,11 +67,11 @@ public class TypedTokenParser {
 		return true;
 	}
 
-	private void promoteParserState(TypedToken.Type type) {
+	private void promoteParserState(TypedToken token) throws ParserException {
 		ParserState newState = ParserState.EMPTY;
-		switch (type) {
+		switch (token.getType()) {
 		case OPEN_BRACKET: newState = ParserState.OPEN_BRACKET; break;
-		case CLOSE_BRACKET: newState = ParserState.CLOSE_BRACKET;  break;
+		case CLOSE_BRACKET: newState = ParserState.CLOSE_BRACKET; break;
 		case CONST:
 		case VALUE: newState = ParserState.VALUE;  break;
 		case OP_ADD:
@@ -80,7 +81,7 @@ public class TypedTokenParser {
 		case FUNC: newState = ParserState.FUNC; break;
 		}
 		if (newState == ParserState.EMPTY)
-			throw new IllegalArgumentException("Invalid token type!0");
+			throw ExceptionsHelper.invalidToken(token);
 
 		switch (_lastState) {
 		case EMPTY:
@@ -88,36 +89,36 @@ public class TypedTokenParser {
 			if (newState != ParserState.OPEN_BRACKET &&
 				newState != ParserState.VALUE &&
 				newState != ParserState.FUNC)
-				throw new IllegalArgumentException("Invalid syntax!1");
+				throw ExceptionsHelper.invalidSyntax(_lastState.toString(), newState.toString(), token);
 			break;
 		case OPEN_BRACKET:
 			if (newState != ParserState.VALUE &&
 				newState != ParserState.OPEN_BRACKET &&
 				newState != ParserState.FUNC)
-				throw new IllegalArgumentException("Invalid syntax!2");
+				throw ExceptionsHelper.invalidSyntax(_lastState.toString(), newState.toString(), token);
 			break;
 		case CLOSE_BRACKET:
 		case VALUE:
 			if (newState != ParserState.OPERATOR &&
 				newState != ParserState.CLOSE_BRACKET)
-				throw new IllegalArgumentException("Invalid syntax!3");
+				throw ExceptionsHelper.invalidSyntax(_lastState.toString(), newState.toString(), token);
 			break;
 		case FUNC:
 			if (newState != ParserState.OPEN_BRACKET)
-				throw new IllegalArgumentException("Invalid syntax!4");
+				throw ExceptionsHelper.invalidSyntax(_lastState.toString(), newState.toString(), token);
 			break;
 		}
 		_lastState = newState;
 	}
 
-	private void finishParsing() {
+	private void finishParsing() throws ParserException {
 		switch (_lastState) {
 		case CLOSE_BRACKET:
 		case VALUE:
 			_lastState = ParserState.EMPTY;
 			return;
 		}
-		throw new IllegalArgumentException("Invalid syntax!6");
+		throw ExceptionsHelper.invalidSyntaxAtEnd(_lastState.toString());
 	}
 
 	private HashMap<String, TypedToken.Type> _operatorsAndConstants;

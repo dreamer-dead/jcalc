@@ -9,12 +9,12 @@ public class ExpressionCalculatorTest {
 	}
 
 	@Test
-	public void calculationTest() {
+	public void calculationTest() throws ParserException {
 		assertEquals(1.0 + 1.0, _calculator.evaluate("1 + 1"), 0.0);
 	}
 
 	@Test
-	public void calculationSiteTest() {
+	public void calculationSiteTest() throws ParserException {
 		assertEquals(
 			11+(Math.exp(2.010635+Math.sin(Math.PI/2)*3)+50)/2,
 			_calculator.evaluate("11+(exp(2.010635+sin(PI/2)*3)+50)/2"), 
