@@ -1,1 +1,1 @@
-java -jar ./build/libs/jcalc-0.0.1.jar $1
+java -jar ./build/libs/jcalc-1.0.0.jar $1

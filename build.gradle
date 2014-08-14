@@ -1,7 +1,7 @@
 apply plugin: 'java'
  
 group = 'org.dreamer.expression.calc'
-version = '0.0.1'
+version = '1.0.0'
 archivesBaseName = 'jcalc'
  
 description = "expression.calc"
