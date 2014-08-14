@@ -1,10 +1,15 @@
 package org.dreamer.expression.calc;
 
 import org.junit.Test;
+import org.junit.Rule;
 import static org.junit.Assert.*;
-import java.util.ArrayList;	
+import org.junit.rules.ExpectedException;
+import java.util.ArrayList;
 
 public class TypedTokenParserTest {
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+
 	public TypedTokenParserTest() {}
 
 	@Test
@@ -53,5 +58,16 @@ public class TypedTokenParserTest {
 		assertEquals(TypedToken.Type.VALUE, typedTokens.get(0).getType());
 		assertEquals(TypedToken.Type.OP_ADD, typedTokens.get(1).getType());
 		assertEquals(TypedToken.Type.VALUE, typedTokens.get(2).getType());
+	}
+
+	@Test
+	public void parseNumberTest() throws ParserException {
+		final TypedTokenParser tokenParser = new TypedTokenParser();
+		final Token numToken = new Token("111.222", 0);
+		assertEquals(TypedToken.Type.VALUE, tokenParser.parseTokenType(numToken));
+
+		exception.expect(ParserException.class);
+		final Token wrongToken = new Token("111,222", 0);
+		tokenParser.parseTokenType(wrongToken);
 	}
 }	

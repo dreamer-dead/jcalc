@@ -2,6 +2,10 @@ package org.dreamer.expression.calc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.text.ParseException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParsePosition;
 
 /**
 * Class that detects token type from token value.
@@ -62,11 +66,27 @@ public class TypedTokenParser {
 
 		// It can be only a number, so check that.
 		try {
-			Double.parseDouble(tokenValue);
-		} catch (NumberFormatException e) {
+			if (null == parseNumber(tokenValue))
+				throw ExceptionsHelper.parseNumberError(token);
+		} catch (ParseException e) {
 			throw ExceptionsHelper.parseNumberError(token);
 		}
 		return TypedToken.Type.VALUE;
+	}
+
+	private static Number parseNumber(String input) throws ParseException {
+		DecimalFormat df = new DecimalFormat();
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		df.setDecimalFormatSymbols(symbols);
+		ParsePosition parsePosition = new ParsePosition(0);
+		final Number result = df.parse(input, parsePosition);
+
+		if (parsePosition.getIndex() != input.length()) {
+			throw new ParseException("Invalid input", parsePosition.getIndex());
+		}
+
+		return result;
 	}
 
 	private static boolean checkOnlyLiterals(String token) {

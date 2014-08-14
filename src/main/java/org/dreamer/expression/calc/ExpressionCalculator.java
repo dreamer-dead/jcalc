@@ -1,6 +1,7 @@
 package org.dreamer.expression.calc;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 class ExpressionCalculator {
 	public ExpressionCalculator() {
@@ -30,7 +31,7 @@ class ExpressionCalculator {
 
 		try {
 			double result = new ExpressionCalculator().evaluate(args[0]);
-			System.out.println(String.format("Result is %1$.5f", result));
+			System.out.println(String.format(Locale.ENGLISH, "%1$.5f", result));
 		} catch(Exception e) {
 			System.out.println("Failed to evaluate expression!");
 			System.out.println(e.getMessage());
