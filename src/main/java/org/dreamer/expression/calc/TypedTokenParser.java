@@ -2,9 +2,12 @@ package org.dreamer.expression.calc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Collection;
 
+/**
+* Class that detects token type from token value.
+*/
 public class TypedTokenParser {
+	// Internal state of the parser.
 	private enum ParserState {
 		EMPTY,
 		OPEN_BRACKET,
@@ -15,6 +18,7 @@ public class TypedTokenParser {
 	};
 
 	public TypedTokenParser() {
+		// Define all known tokens like operators and constants.
 		_operatorsAndConstants = new HashMap<String, TypedToken.Type>();
 		_operatorsAndConstants.put("(", TypedToken.Type.OPEN_BRACKET);
 		_operatorsAndConstants.put(")", TypedToken.Type.CLOSE_BRACKET);
@@ -24,21 +28,26 @@ public class TypedTokenParser {
 		_operatorsAndConstants.put("/", TypedToken.Type.OP_DIV);
 		_operatorsAndConstants.put("E", TypedToken.Type.CONST);
 		_operatorsAndConstants.put("PI", TypedToken.Type.CONST);
+
+		// Starting with empty state.
 		_lastState = ParserState.EMPTY;
 	}
 
-	public ArrayList<TypedToken> parse(Collection<Token> tokens) throws ParserException {
+	public ArrayList<TypedToken> parse(Iterable<Token> tokens) throws ParserException {
 		ArrayList<TypedToken> result = new ArrayList<TypedToken>();
+		// Process all tokens.
 		for (Token token : tokens)
 			result.add(parseToken(token));
 
+		// Check our state at the end.
 		finishParsing();
 		return result;
 	}
 
 	private TypedToken parseToken(Token token) throws ParserException {
-		TypedToken.Type type = parseTokenType(token);
+		final TypedToken.Type type = parseTokenType(token);
 		final TypedToken result = new TypedToken(token, type);
+		// Check expression syntax.
 		promoteParserState(result);
 		return result;
 	}
@@ -51,6 +60,7 @@ public class TypedTokenParser {
 		if (checkOnlyLiterals(tokenValue))
 			return TypedToken.Type.FUNC;
 
+		// It can be only a number, so check that.
 		try {
 			Double.parseDouble(tokenValue);
 		} catch (NumberFormatException e) {
@@ -67,6 +77,7 @@ public class TypedTokenParser {
 		return true;
 	}
 
+	// Here we check the order of tokens.
 	private void promoteParserState(TypedToken token) throws ParserException {
 		ParserState newState = ParserState.EMPTY;
 		switch (token.getType()) {
@@ -86,12 +97,15 @@ public class TypedTokenParser {
 		switch (_lastState) {
 		case EMPTY:
 		case OPERATOR:
+			// First token right after start or after operator should be
+			// '(', number/constant or function name.
 			if (newState != ParserState.OPEN_BRACKET &&
 				newState != ParserState.VALUE &&
 				newState != ParserState.FUNC)
 				throw ExceptionsHelper.invalidSyntax(_lastState.toString(), newState.toString(), token);
 			break;
 		case OPEN_BRACKET:
+			// After '(' there should be a number, one more '(' or function name.
 			if (newState != ParserState.VALUE &&
 				newState != ParserState.OPEN_BRACKET &&
 				newState != ParserState.FUNC)
@@ -99,11 +113,13 @@ public class TypedTokenParser {
 			break;
 		case CLOSE_BRACKET:
 		case VALUE:
+			// After number or constant there should be operator or ')'.
 			if (newState != ParserState.OPERATOR &&
 				newState != ParserState.CLOSE_BRACKET)
 				throw ExceptionsHelper.invalidSyntax(_lastState.toString(), newState.toString(), token);
 			break;
 		case FUNC:
+			// And only '(' should follow after function name.
 			if (newState != ParserState.OPEN_BRACKET)
 				throw ExceptionsHelper.invalidSyntax(_lastState.toString(), newState.toString(), token);
 			break;
@@ -112,6 +128,7 @@ public class TypedTokenParser {
 	}
 
 	private void finishParsing() throws ParserException {
+		// Check that expression ends with ')' or number/constant.
 		switch (_lastState) {
 		case CLOSE_BRACKET:
 		case VALUE:

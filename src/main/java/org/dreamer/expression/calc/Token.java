@@ -1,5 +1,9 @@
 package org.dreamer.expression.calc;
 
+/**
+* Simple class to represent text token.
+* For example, '+', '-', 'sin' is a tokens.
+*/
 public class Token {
 	public Token(String value, int position) {
 		_value = value;

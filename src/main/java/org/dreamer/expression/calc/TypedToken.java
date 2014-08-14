@@ -1,5 +1,9 @@
 package org.dreamer.expression.calc;
 
+/**
+* TypedToken class keeps token type, depending on token value.
+* It allows us to compare enum values instead of strings.
+*/
 public class TypedToken {
 	public enum Type {
 		VALUE,
@@ -37,6 +41,7 @@ public class TypedToken {
 			|| _type == Type.OP_DIV;
 	}
 
+	// TODO: Move priority comparison to a higher level.
 	public int comparePriority(TypedToken other) {
 		if (isOperator() && other.isOperator()) {
 			return getPriority(_type) - getPriority(other.getType());
