@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 class ExpressionCalculator {
 	public ExpressionCalculator() {
-		_evaluator = new PolishNotationTokensEvaluator();
+		_compiler = new RNETokenCompiler();
 		_tokenParser = new TokenParser();
 		_lexemParser = new LexemParser();
 		_converter = new InfixToRPNConverter();
@@ -14,7 +14,7 @@ class ExpressionCalculator {
 		final ArrayList<Lexem> lexems = _lexemParser.parse(expression);
 		final ArrayList<ParsedToken> tokens = _tokenParser.parse(lexems);
 		final ArrayList<ParsedToken> tokensInRPN = _converter.convert(tokens);
-		return _evaluator.evaluate(tokensInRPN).eval();
+		return _compiler.compile(tokensInRPN).eval();
 	}
 
 	private static void printHelp() {
@@ -37,7 +37,7 @@ class ExpressionCalculator {
 		}
 	}
 
-	PolishNotationTokensEvaluator _evaluator;
+	RNETokenCompiler _compiler;
 	TokenParser _tokenParser;
 	LexemParser _lexemParser;
 	InfixToRPNConverter _converter;

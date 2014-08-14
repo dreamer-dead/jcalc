@@ -2,13 +2,13 @@ package org.dreamer.expression.calc;
 
 import java.util.Stack;
 
-public class PolishNotationTokensEvaluator {
-	public PolishNotationTokensEvaluator() {}
+public class RPNTokenCompiler {
+	public RPNTokenCompiler() {}
 
-	public Expression evaluate(Iterable<ParsedToken> tokens) {
+	public Expression compile(Iterable<ParsedToken> tokens) {
 		Stack<Expression> stack = new Stack<Expression>();
 		for (ParsedToken t : tokens) {
-			final Expression exprFromToken = evaluateFromToken(t, stack);
+			final Expression exprFromToken = compileToken(t, stack);
 			stack.push(exprFromToken);
 		}
 
@@ -17,7 +17,7 @@ public class PolishNotationTokensEvaluator {
 		return stack.pop();
 	}
 
-	public static Expression evaluateFromToken(ParsedToken token, Stack<Expression> stack) {
+	public static Expression compileToken(ParsedToken token, Stack<Expression> stack) {
 		if (token.isValue()) {
 			if (token.getType() == ParsedToken.Type.CONST)
 				return ValueExpression.constant(token.getLexem().getValue());
